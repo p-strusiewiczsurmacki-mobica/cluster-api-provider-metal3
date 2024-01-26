@@ -4,7 +4,7 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.13.0
-  name: metal3lustertemplates.infrastructure.cluster.x-k8s.io
+  name: metal3clustertemplates.infrastructure.cluster.x-k8s.io
 spec:
   group: infrastructure.cluster.x-k8s.io
   names:
@@ -12,14 +12,14 @@ spec:
     - cluster-api
     kind: Metal3ClusterTemplate
     listKind: Metal3ClusterTemplateList
-    plural: metal3lustertemplates
+    plural: metal3clustertemplates
     singular: metal3clustertemplate
   scope: Namespaced
   versions:
   - name: v1beta1
     schema:
       openAPIV3Schema:
-        description: Metal3ClusterTemplate is the Schema for the metal3lustertemplates
+        description: Metal3ClusterTemplate is the Schema for the metal3clustertemplates
           API.
         properties:
           apiVersion:

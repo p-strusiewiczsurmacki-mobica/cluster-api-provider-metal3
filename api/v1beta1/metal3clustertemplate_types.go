@@ -26,10 +26,10 @@ type Metal3ClusterTemplateSpec struct {
 }
 
 // +kubebuilder:object:root=true
-// +kubebuilder:resource:path=metal3lustertemplates,scope=Namespaced,categories=cluster-api
+// +kubebuilder:resource:path=metal3clustertemplates,scope=Namespaced,categories=cluster-api
 // +kubebuilder:storageversion
 
-// Metal3ClusterTemplate is the Schema for the metal3lustertemplates API.
+// Metal3ClusterTemplate is the Schema for the metal3clustertemplates API.
 type Metal3ClusterTemplate struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
