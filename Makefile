@@ -493,11 +493,23 @@ deploy-examples:
 	kubectl apply -f ./examples/_out/machinedeployment.yaml
 	kubectl apply -f ./examples/_out/controlplane.yaml
 
+deploy-examples-clusterclass:
+	kubectl apply -f ./examples/_out_new/metal3plane.yaml
+	kubectl apply -f ./examples/_out_new/cluster.yaml
+	kubectl apply -f ./examples/_out_new/machinedeployment.yaml
+	kubectl apply -f ./examples/_out_new/controlplane.yaml
+
 delete-examples:
 	kubectl delete -f ./examples/_out/machinedeployment.yaml || true
 	kubectl delete -f ./examples/_out/controlplane.yaml || true
 	kubectl delete -f ./examples/_out/cluster.yaml || true
 	kubectl delete -f ./examples/_out/metal3plane.yaml || true
+
+delete-examples-clusterclass:
+	kubectl delete -f ./examples/_out_new/machinedeployment.yaml || true
+	kubectl delete -f ./examples/_out_new/controlplane.yaml || true
+	kubectl delete -f ./examples/_out_new/cluster.yaml || true
+	kubectl delete -f ./examples/_out_new/metal3plane.yaml || true
 
 
 ## --------------------------------------

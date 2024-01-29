@@ -1,0 +1,124 @@
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: Metal3ClusterTemplate
+metadata:
+  name: test1-cluster-template
+  namespace: default
+spec:
+  template:
+    spec: {}
+---
+apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+kind: KubeadmControlPlaneTemplate
+metadata:
+  name: test1-controlplane
+  namespace: default
+spec:
+  template:
+    spec:
+      kubeadmConfigSpec:
+        clusterConfiguration:
+          apiServer:
+            extraArgs:
+              cloud-provider: baremetal
+          controllerManager:
+            extraArgs:
+              cloud-provider: baremetal
+        initConfiguration:
+          nodeRegistration:
+            kubeletExtraArgs:
+              cloud-provider: baremetal
+            name: '{{ ds.meta_data.local_hostname }}'
+        joinConfiguration:
+          controlPlane: {}
+          nodeRegistration:
+            kubeletExtraArgs:
+              cloud-provider: baremetal
+            name: '{{ ds.meta_data.local_hostname }}'
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+  kind: ClusterClass
+  metadata:
+    name: test1-clusterclass
+    namespace: default
+  spec:
+    controlPlane:
+      ref:
+        apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+        kind: KubeadmControlPlaneTemplate
+        name: test1-controlplane
+      machineInfrastructure:
+        ref:
+          apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+          kind: Metal3MachineTemplate
+          name: test1-md-0
+      # This will create a MachineHealthCheck for ControlPlane machines.
+      machineHealthCheck:
+        nodeStartupTimeout: 3m
+        maxUnhealthy: 33%
+        unhealthyConditions:
+          - type: Ready
+            status: Unknown
+            timeout: 300s
+          - type: Ready
+            status: "False"
+            timeout: 300s
+    workers:
+      machineDeployments:
+      - class: test-worker
+        template:
+          bootstrap:
+            ref:
+              apiVersion: bootstrap.cluster.x-k8s.io/v1beta1
+              kind: KubeadmConfigTemplate
+              name: test1-md-0
+          infrastructure:
+            ref:
+              apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+              kind: Metal3MachineTemplate
+              name: test1-md-0
+        # This will create a health check for each deployment created with the "test-worker" MachineDeploymentClass
+        machineHealthCheck:
+          unhealthyConditions:
+            - type: Ready
+              status: Unknown
+              timeout: 300s
+            - type: Ready
+              status: "False"
+              timeout: 300s
+    infrastructure:
+      ref:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+        kind: Metal3ClusterTemplate
+        name: test1-cluster-template
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: test1
+  namespace: default
+spec:
+  topology:
+    class: test1-clusterclass
+    version: v1.27.3
+    controlPlane:
+      replicas: 1
+      labels: {}
+      annotations: {}
+    workers:
+      machineDeployments:
+      - class: test1-md-0
+        name: test1-machine 1
+        replicas: 1
+        labels:
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: Metal3Cluster
+metadata:
+  name: test1
+  namespace: default
+spec:
+  controlPlaneEndpoint:
+    host: 192.168.111.249
+    port: 6443
+  noCloudProvider: true

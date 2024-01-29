@@ -1,0 +1,198 @@
+apiVersion: controlplane.cluster.x-k8s.io/v1beta1
+kind: KubeadmControlPlane
+metadata:
+  name: test1-controlplane
+  namespace: default
+spec:
+  kubeadmConfigSpec:
+    clusterConfiguration:
+      apiServer:
+        extraArgs:
+          cloud-provider: baremetal
+      controllerManager:
+        extraArgs:
+          cloud-provider: baremetal
+    initConfiguration:
+      nodeRegistration:
+        kubeletExtraArgs:
+          cloud-provider: baremetal
+        name: '{{ ds.meta_data.local_hostname }}'
+    joinConfiguration:
+      controlPlane: {}
+      nodeRegistration:
+        kubeletExtraArgs:
+          cloud-provider: baremetal
+        name: '{{ ds.meta_data.local_hostname }}'
+  machineTemplate:
+    infrastructureRef:
+      apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+      kind: Metal3MachineTemplate
+      name: test1-controlplane
+      namespace: 
+    nodeDrainTimeout: 0s
+  replicas: 3
+  rolloutStrategy:
+    rollingUpdate:
+      maxSurge: 1
+    type: RollingUpdate
+  version: v1.29.0
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: Metal3DataTemplate
+metadata:
+  name: test1-cp-metadata
+  namespace: default
+spec:
+  clusterName: test1
+  metaData:
+    fromHostInterfaces:
+    - interface: eth0
+      key: mac
+    gatewaysFromIPPool:
+    - key: gateway_1
+      name: pool1
+    - key: gateway_2
+      name: pool2
+    - key: gateway6_1
+      name: pool6-1
+    - key: gateway6_2
+      name: pool6-2
+    indexes:
+    - key: index_0_1
+      offset: 0
+      step: 1
+    - key: index_3
+      offset: 3
+    - key: index_5_2
+      offset: 5
+      step: 2
+    ipAddressesFromIPPool:
+    - key: ip_1
+      name: pool1
+    - key: ip_2
+      name: pool2
+    - key: ip6_1
+      name: pool6-1
+    - key: ip6_2
+      name: pool6-2
+    objectNames:
+    - key: machine_name
+      object: machine
+    - key: metal3machine_name
+      object: metal3machine
+    - key: bmh_name
+      object: baremetalhost
+    prefixesFromIPPool:
+    - key: prefix_1
+      name: pool1
+    - key: prefix_2
+      name: pool2
+    - key: prefix6_1
+      name: pool6-1
+    - key: prefix6_2
+      name: pool6-2
+    strings:
+    - key: abc
+      value: def
+  networkData:
+    links:
+      ethernets:
+      - id: enp1s0
+        macAddress:
+          fromHostInterface: eth0
+        type: phy
+      - id: enp2s0
+        macAddress:
+          fromHostInterface: eth1
+        type: phy
+    networks:
+      ipv4:
+      - id: baremetal
+        ipAddressFromIPPool: pool1
+        link: enp2s0
+        routes:
+        - gateway:
+            fromIPPool: pool1
+          network: 0.0.0.0
+          prefix: 0
+          services:
+            dns:
+            - 8.8.4.4
+      ipv4DHCP:
+      - id: provisioning
+        link: enp1s0
+    services:
+      dns:
+      - 8.8.8.8
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: Metal3MachineTemplate
+metadata:
+  name: test1-controlplane
+  namespace: default
+spec:
+  nodeReuse: false
+  template:
+    spec:
+      automatedCleaningMode: metadata
+      dataTemplate:
+        name: test1-cp-metadata
+      image:
+        checksum: http://172.22.0.1/images/UBUNTU_22.04_NODE_IMAGE_K8S_v1.29.0-raw.img.sha256sum
+        checksumType: sha256
+        format: raw
+        url: http://172.22.0.1/images/UBUNTU_22.04_NODE_IMAGE_K8S_v1.29.0-raw.img
+---
+apiVersion: ipam.metal3.io/v1alpha1
+kind: IPPool
+metadata:
+  name: pool1
+  namespace: default
+spec:
+  clusterName: test1
+  namePrefix: pool1
+  pools:
+  - end: 192.168.0.250
+    gateway: 192.168.0.1
+    prefix: 24
+    start: 192.168.0.10
+---
+apiVersion: ipam.metal3.io/v1alpha1
+kind: IPPool
+metadata:
+  name: pool2
+  namespace: default
+spec:
+  clusterName: test1
+  gateway: 192.168.1.1
+  namePrefix: pool2
+  pools:
+  - subnet: 192.168.1.0/24
+  prefix: 25
+---
+apiVersion: ipam.metal3.io/v1alpha1
+kind: IPPool
+metadata:
+  name: pool6-1
+  namespace: default
+spec:
+  clusterName: test1
+  namePrefix: pool6-1
+  pools:
+  - end: 2001::ff00
+    gateway: 2001::1
+    prefix: 96
+    start: 2001::10
+---
+apiVersion: ipam.metal3.io/v1alpha1
+kind: IPPool
+metadata:
+  name: pool6-2
+  namespace: default
+spec:
+  clusterName: test1
+  gateway: 2001:ABC::1
+  namePrefix: pool6-2
+  pools:
+  - subnet: 2001:ABC::0/96
+  prefix: 96
