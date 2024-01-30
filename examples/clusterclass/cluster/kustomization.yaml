@@ -3,5 +3,5 @@ kind: Kustomization
 namespace: default
 resources:
 - cluster.yaml
-configurations:
-- kustomizeconfig.yaml
+# configurations:
+# - kustomizeconfig.yaml
