@@ -98,7 +98,7 @@ curl --fail -Ss -L -o "${ENVSUBST}" https://github.com/a8m/envsubst/releases/dow
 chmod +x "$ENVSUBST"
 
 SRC_DIR="${SOURCE_DIR}"
-REORDER_TYPE=""
+REORDER_TYPE="--reorder=legacy"
 
 if [ -n "${CLUSTERCLASS_ENABLE}" ]; then
   SRC_DIR="${SRC_DIR}/clusterclass"
