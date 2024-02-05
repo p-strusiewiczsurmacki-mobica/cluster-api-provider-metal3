@@ -41,7 +41,7 @@ func TestMetal3ClusterTemplateValidation(t *testing.T) {
 		c         *Metal3ClusterTemplate
 	}{
 		{
-			name:      "should succeed when values and templates correct",
+			name:      "should succeed when values and templates are correct",
 			expectErr: false,
 			c: &Metal3ClusterTemplate{
 				ObjectMeta: metav1.ObjectMeta{
@@ -54,6 +54,22 @@ func TestMetal3ClusterTemplateValidation(t *testing.T) {
 								Host: "127.0.0.1",
 								Port: 4242,
 							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "should fail when values and templates are incorrect",
+			expectErr: true,
+			c: &Metal3ClusterTemplate{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "foo",
+				},
+				Spec: Metal3ClusterTemplateSpec{
+					Template: Metal3ClusterTemplateResource{
+						Spec: Metal3ClusterSpec{
+							ControlPlaneEndpoint: APIEndpoint{},
 						},
 					},
 				},
