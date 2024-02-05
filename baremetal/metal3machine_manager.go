@@ -1322,9 +1322,11 @@ func (m *MachineManager) SetNodeProviderID(ctx context.Context, providerIDOnM3M 
 	if matchingNodesCount == 1 {
 		return nil
 	}
+	m.Log.Info("node label: " + nodeLabel)
 	nodes, countNodesWithLabel, err := m.getNodesWithLabel(ctx, nodeLabel, clientFactory)
 	if err != nil {
 		errMessage := "error retrieving node with label, requeuing"
+
 		m.Log.Info(errMessage)
 		return WithTransientError(errors.New(errMessage), requeueAfter)
 	}
