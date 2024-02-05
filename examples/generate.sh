@@ -47,6 +47,7 @@ COMPONENTS_METAL3_GENERATED_FILE=${SOURCE_DIR}/provider-components/infrastructur
 
 PROVIDER_COMPONENTS_GENERATED_FILE=${OUTPUT_DIR}/provider-components.yaml
 CLUSTER_GENERATED_FILE=${OUTPUT_DIR}/cluster.yaml
+CLUSTERCLASS_GENERATED_FILE=${OUTPUT_DIR}/clusterclass.yaml
 CONTROLPLANE_GENERATED_FILE=${OUTPUT_DIR}/controlplane.yaml
 MACHINEDEPLOYMENT_GENERATED_FILE=${OUTPUT_DIR}/machinedeployment.yaml
 METAL3PLANE_GENERATED_FILE=${OUTPUT_DIR}/metal3plane.yaml
@@ -97,25 +98,26 @@ ENVSUBST="${SOURCE_DIR}/envsubst-go"
 curl --fail -Ss -L -o "${ENVSUBST}" https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-"$(uname -s)"-"$(uname -m)"
 chmod +x "$ENVSUBST"
 
-SRC_DIR="${SOURCE_DIR}"
-REORDER_TYPE="--reorder=legacy"
-
 if [ -n "${CLUSTERCLASS_ENABLE}" ]; then
-  SRC_DIR="${SRC_DIR}/clusterclass"
-  REORDER_TYPE="--reorder=none"
+   "$KUSTOMIZE" build --reorder=none "${SOURCE_DIR}/clusterclass/class" | "$ENVSUBST" >"${CLUSTERCLASS_GENERATED_FILE}"
+  echo "Generated ${CLUSTER_GENERATED_FILE}"
+
+  # Generate controlplane resources.
+  "$ENVSUBST" -i "${SOURCE_DIR}/clusterclass/cluster/cluster.yaml" >"${CLUSTER_GENERATED_FILE}"
+  echo "Generated ${CONTROLPLANE_GENERATED_FILE}"
+else
+  # Generate cluster resources.
+  "$KUSTOMIZE" build "${SOURCE_DIR}/cluster" | "$ENVSUBST" >"${CLUSTER_GENERATED_FILE}"
+  echo "Generated ${CLUSTER_GENERATED_FILE}"
+
+  # Generate controlplane resources.
+  "$KUSTOMIZE" build "${SOURCE_DIR}/controlplane" | "$ENVSUBST" >"${CONTROLPLANE_GENERATED_FILE}"
+  echo "Generated ${CONTROLPLANE_GENERATED_FILE}"
+
+  # Generate machinedeployment resources.
+  "$KUSTOMIZE" build "${SOURCE_DIR}/machinedeployment" | "$ENVSUBST" >>"${MACHINEDEPLOYMENT_GENERATED_FILE}"
+  echo "Generated ${MACHINEDEPLOYMENT_GENERATED_FILE}"
 fi
-
-# Generate cluster resources.
-"$KUSTOMIZE" build "${REORDER_TYPE}" "${SRC_DIR}/cluster" | "$ENVSUBST" >"${CLUSTER_GENERATED_FILE}"
-echo "Generated ${CLUSTER_GENERATED_FILE}"
-
-# Generate controlplane resources.
-"$KUSTOMIZE" build "${SRC_DIR}/controlplane" | "$ENVSUBST" >"${CONTROLPLANE_GENERATED_FILE}"
-echo "Generated ${CONTROLPLANE_GENERATED_FILE}"
-
-# Generate machinedeployment resources.
-"$KUSTOMIZE" build "${SRC_DIR}/machinedeployment" | "$ENVSUBST" >>"${MACHINEDEPLOYMENT_GENERATED_FILE}"
-echo "Generated ${MACHINEDEPLOYMENT_GENERATED_FILE}"
 
 # Generate metal3crds resources.
 "$KUSTOMIZE" build "${SOURCE_DIR}/metal3crds" | "$ENVSUBST" >"${METAL3CRDS_GENERATED_FILE}"

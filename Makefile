@@ -505,11 +505,23 @@ deploy-examples:
 	kubectl apply -f ./examples/_out/machinedeployment.yaml
 	kubectl apply -f ./examples/_out/controlplane.yaml
 
+deploy-examples-clusterclass:
+	kubectl apply -f ./examples/_out/metal3plane.yaml
+	kubectl apply -f ./examples/_out/clusterclass.yaml
+	kubectl apply -f ./examples/_out/cluster.yaml
+
 delete-examples:
 	kubectl delete -f ./examples/_out/machinedeployment.yaml || true
 	kubectl delete -f ./examples/_out/controlplane.yaml || true
 	kubectl delete -f ./examples/_out/cluster.yaml || true
 	kubectl delete -f ./examples/_out/metal3plane.yaml || true
+
+delete-examples-clusterclass:
+	kubectl delete -f ./examples/_out/cluster.yaml
+	kubectl delete -f ./examples/_out/clusterclass.yaml
+	kubectl delete -f ./examples/_out/metal3plane.yaml
+	
+	
 
 ## --------------------------------------
 ## Release
@@ -567,6 +579,10 @@ kind-create: ## create capm3 kind cluster if needed
 .PHONY: tilt-settings
 tilt-settings:
 	./hack/gen_tilt_settings.sh
+
+.PHONY: tilt-settings-clusterclass
+tilt-settings-clusterclass:
+	CLUSTERCLASS=true ./hack/gen_tilt_settings.sh
 
 .PHONY: tilt-up
 tilt-up: $(ENVSUBST) $(KUSTOMIZE) kind-create ## start tilt and build kind cluster if needed
