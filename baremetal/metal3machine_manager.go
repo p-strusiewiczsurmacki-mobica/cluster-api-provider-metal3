@@ -1308,7 +1308,7 @@ func (m *MachineManager) SetNodeProviderID(ctx context.Context, providerIDOnM3M 
 		return errors.Wrap(err, "More than one node using the same providerID")
 	}
 	if err != nil {
-		errMessage := "error retrieving node, requeuing"
+		errMessage := "error retrieving node without label, requeuing"
 		m.Log.Info(errMessage)
 		return WithTransientError(errors.New(errMessage), requeueAfter)
 	}
@@ -1324,9 +1324,8 @@ func (m *MachineManager) SetNodeProviderID(ctx context.Context, providerIDOnM3M 
 	}
 	nodes, countNodesWithLabel, err := m.getNodesWithLabel(ctx, nodeLabel, clientFactory)
 	if err != nil {
-		errMessage := "error retrieving node, requeuing"
+		errMessage := "error retrieving node with label, requeuing"
 		m.Log.Info(errMessage)
-
 		return WithTransientError(errors.New(errMessage), requeueAfter)
 	}
 	if countNodesWithLabel == 0 {
