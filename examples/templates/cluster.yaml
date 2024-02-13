@@ -1,0 +1,30 @@
+
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  name: ${CLUSTER_NAME}
+  namespace: ${NAMESPACE}
+spec:
+  topology:
+    class: example-clusterclass
+    version: ${KUBERNETES_VERSION}
+    controlPlane:
+      replicas: 1
+    workers:
+      machineDeployments:
+      - class: example-worker
+        name: ${CLUSTER_NAME}-machine
+        replicas: 2
+    variables:
+    - name: imageChecksum
+      value: ${IMAGE_CHECKSUM}
+    - name: imageChecksumType
+      value: ${IMAGE_CHECKSUM_TYPE}
+    - name: imageFormat
+      value: ${IMAGE_FORMAT}
+    - name: imageURL
+      value: ${IMAGE_URL}
+    - name: controlplaneEndpointHost
+      value: "${CLUSTER_APIENDPOINT_HOST}"
+    - name: controlplaneEndpointPort
+      value: ${CLUSTER_APIENDPOINT_PORT}

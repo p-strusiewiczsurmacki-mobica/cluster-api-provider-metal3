@@ -3,7 +3,6 @@ apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
 kind: Metal3ClusterTemplate
 metadata:
   name: example-cluster-template
-  namespace: ${NAMESPACE}
 spec:
   template:
     spec:
@@ -16,7 +15,6 @@ apiVersion: controlplane.cluster.x-k8s.io/v1beta1
 kind: KubeadmControlPlaneTemplate
 metadata:
   name: example-controlplane
-  namespace: ${NAMESPACE}
 spec:
   template:
     spec:
@@ -53,7 +51,7 @@ spec:
         checksum: ${IMAGE_CHECKSUM}
         checksumType: ${IMAGE_CHECKSUM_TYPE}
         format: ${IMAGE_FORMAT}
-        url: ${IMAGE_URL}
+        url: http://example.com
       dataTemplate:
         name: example-md-metadata
 ---
@@ -315,8 +313,81 @@ apiVersion: cluster.x-k8s.io/v1beta1
 kind: ClusterClass
 metadata:
   name: example-clusterclass
-  namespace: ${NAMESPACE}
 spec:
+  variables:
+  - name: controlplaneEndpointHost
+    required: true
+    schema:
+      openAPIV3Schema:
+        type: string
+  - name: controlplaneEndpointPort
+    required: true
+    schema:
+      openAPIV3Schema:
+        type: integer
+  - name: imageChecksum
+    required: true
+    schema:
+      openAPIV3Schema:
+        type: string
+  - name: imageChecksumType
+    required: true
+    schema:
+      openAPIV3Schema:
+        type: string
+  - name: imageFormat
+    required: true
+    schema:
+      openAPIV3Schema:
+        type: string
+  - name: imageURL
+    required: true
+    schema:
+      openAPIV3Schema:
+        type: string
+  patches:
+  # - name: controlplaneEndpoint
+  #   definitions:
+  #   - selector:
+  #       apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+  #       kind: Metal3ClusterTemplate
+  #       matchResources:
+  #         infrastructureCluster: true
+  #     jsonPatches:
+  #     - op: add
+  #       path: /spec/template/spec/controlplaneEndpoint/host
+  #       valueFrom:
+  #         variable: controlplaneEndpointHost
+  #     - op: add
+  #       path: /spec/template/spec/controlplaneEndpoint/port
+  #       valueFrom:
+  #         variable: controlplaneEndpointPort
+  - name: image
+    definitions:
+    - selector:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+        kind: Metal3MachineTemplate
+        matchResources:
+          machineDeploymentClass:
+            names:
+            - example-worker
+      jsonPatches:
+      - op: replace
+        path: /spec/template/spec/image/checksum
+        valueFrom:
+          variable: imageChecksum
+      - op: replace
+        path: /spec/template/spec/image/checksumType
+        valueFrom:
+          variable: imageChecksumType
+      - op: replace
+        path: /spec/template/spec/image/format
+        valueFrom:
+          variable: imageFormat
+      - op: replace
+        path: /spec/template/spec/image/url
+        valueFrom:
+          variable: imageURL
   controlPlane:
     ref:
       apiVersion: controlplane.cluster.x-k8s.io/v1beta1

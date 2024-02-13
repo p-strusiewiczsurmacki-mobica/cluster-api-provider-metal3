@@ -99,11 +99,11 @@ curl --fail -Ss -L -o "${ENVSUBST}" https://github.com/a8m/envsubst/releases/dow
 chmod +x "$ENVSUBST"
 
 if [ -n "${CLUSTERCLASS_ENABLE}" ]; then
-   "$KUSTOMIZE" build --reorder=none "${SOURCE_DIR}/clusterclass/class" | "$ENVSUBST" >"${CLUSTERCLASS_GENERATED_FILE}"
+  "$ENVSUBST" -i "${SOURCE_DIR}/templates/clusterclass.yaml" >"${CLUSTERCLASS_GENERATED_FILE}"
   echo "Generated ${CLUSTER_GENERATED_FILE}"
 
   # Generate controlplane resources.
-  "$ENVSUBST" -i "${SOURCE_DIR}/clusterclass/cluster/cluster.yaml" >"${CLUSTER_GENERATED_FILE}"
+  "$ENVSUBST" -i "${SOURCE_DIR}/templates/cluster.yaml" >"${CLUSTER_GENERATED_FILE}"
   echo "Generated ${CONTROLPLANE_GENERATED_FILE}"
 else
   # Generate cluster resources.

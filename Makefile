@@ -582,7 +582,7 @@ tilt-settings:
 
 .PHONY: tilt-settings-clusterclass
 tilt-settings-clusterclass:
-	CLUSTERCLASS=true ./hack/gen_tilt_settings.sh
+	CLUSTER_TOPOLOGY=true ./hack/gen_tilt_settings.sh
 
 .PHONY: tilt-up
 tilt-up: $(ENVSUBST) $(KUSTOMIZE) kind-create ## start tilt and build kind cluster if needed
