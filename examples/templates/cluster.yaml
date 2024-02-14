@@ -16,15 +16,13 @@ spec:
         name: ${CLUSTER_NAME}-machine
         replicas: 2
     variables:
-    - name: imageChecksum
-      value: ${IMAGE_CHECKSUM}
-    - name: imageChecksumType
-      value: ${IMAGE_CHECKSUM_TYPE}
-    - name: imageFormat
-      value: ${IMAGE_FORMAT}
-    - name: imageURL
-      value: ${IMAGE_URL}
-    - name: controlplaneEndpointHost
-      value: "${CLUSTER_APIENDPOINT_HOST}"
-    - name: controlplaneEndpointPort
-      value: ${CLUSTER_APIENDPOINT_PORT}
+    - name: image
+      value:
+        checksum: ${IMAGE_CHECKSUM}
+        checksumType: ${IMAGE_CHECKSUM_TYPE}
+        format: ${IMAGE_FORMAT}
+        url: ${IMAGE_URL}
+    - name: controlPlaneEndpoint
+      value:
+        host: ${CLUSTER_APIENDPOINT_HOST}
+        port: ${CLUSTER_APIENDPOINT_PORT}

@@ -7,8 +7,8 @@ spec:
   template:
     spec:
       controlPlaneEndpoint:
-        host: ${CLUSTER_APIENDPOINT_HOST}
-        port: ${CLUSTER_APIENDPOINT_PORT}
+        host: 127.0.0.1
+        port: 6443
       noCloudProvider: true
 ---
 apiVersion: controlplane.cluster.x-k8s.io/v1beta1
@@ -315,53 +315,42 @@ metadata:
   name: example-clusterclass
 spec:
   variables:
-  - name: controlplaneEndpointHost
+  - name: controlPlaneEndpoint
     required: true
     schema:
       openAPIV3Schema:
-        type: string
-  - name: controlplaneEndpointPort
-    required: true
+        type: object
+        properties: 
+          host: 
+            type: string
+          port:
+            type: integer
+  - name: image
     schema:
       openAPIV3Schema:
-        type: integer
-  - name: imageChecksum
-    required: true
-    schema:
-      openAPIV3Schema:
-        type: string
-  - name: imageChecksumType
-    required: true
-    schema:
-      openAPIV3Schema:
-        type: string
-  - name: imageFormat
-    required: true
-    schema:
-      openAPIV3Schema:
-        type: string
-  - name: imageURL
-    required: true
-    schema:
-      openAPIV3Schema:
-        type: string
+        type: object
+        properties: 
+          checksum: 
+            type: string
+          checksumType:
+            type: string
+          format:
+            type: string
+          url:
+            type: string
   patches:
-  # - name: controlplaneEndpoint
-  #   definitions:
-  #   - selector:
-  #       apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
-  #       kind: Metal3ClusterTemplate
-  #       matchResources:
-  #         infrastructureCluster: true
-  #     jsonPatches:
-  #     - op: add
-  #       path: /spec/template/spec/controlplaneEndpoint/host
-  #       valueFrom:
-  #         variable: controlplaneEndpointHost
-  #     - op: add
-  #       path: /spec/template/spec/controlplaneEndpoint/port
-  #       valueFrom:
-  #         variable: controlplaneEndpointPort
+  - name: controlPlaneEndpointSub
+    definitions:
+    - selector:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+        kind: Metal3ClusterTemplate
+        matchResources:
+          infrastructureCluster: true
+      jsonPatches:
+      - op: add
+        path: /spec/template/spec/controlPlaneEndpoint
+        valueFrom:
+          variable: controlPlaneEndpoint
   - name: image
     definitions:
     - selector:
@@ -375,19 +364,19 @@ spec:
       - op: replace
         path: /spec/template/spec/image/checksum
         valueFrom:
-          variable: imageChecksum
+          variable: image.checksum
       - op: replace
         path: /spec/template/spec/image/checksumType
         valueFrom:
-          variable: imageChecksumType
+          variable: image.checksumType
       - op: replace
         path: /spec/template/spec/image/format
         valueFrom:
-          variable: imageFormat
+          variable: image.format
       - op: replace
         path: /spec/template/spec/image/url
         valueFrom:
-          variable: imageURL
+          variable: image.url
   controlPlane:
     ref:
       apiVersion: controlplane.cluster.x-k8s.io/v1beta1
