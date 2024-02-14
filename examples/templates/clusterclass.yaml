@@ -340,6 +340,7 @@ spec:
             type: string
   patches:
   - name: controlPlaneEndpointSub
+    description: Overrides controlPlaneEndpoint data of Metal3ClusterTemplate used by the cluster
     definitions:
     - selector:
         apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
@@ -351,7 +352,8 @@ spec:
         path: /spec/template/spec/controlPlaneEndpoint
         valueFrom:
           variable: controlPlaneEndpoint
-  - name: image
+  - name: imageSub
+    description: Overrides image data for worker nodes of example-worker class
     definitions:
     - selector:
         apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
@@ -360,6 +362,31 @@ spec:
           machineDeploymentClass:
             names:
             - example-worker
+      jsonPatches:
+      - op: replace
+        path: /spec/template/spec/image/checksum
+        valueFrom:
+          variable: image.checksum
+      - op: replace
+        path: /spec/template/spec/image/checksumType
+        valueFrom:
+          variable: image.checksumType
+      - op: replace
+        path: /spec/template/spec/image/format
+        valueFrom:
+          variable: image.format
+      - op: replace
+        path: /spec/template/spec/image/url
+        valueFrom:
+          variable: image.url
+  - name: controlPlaneImageSub
+    description: Overrides image data for worker nodes of control plane node
+    definitions:
+    - selector:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+        kind: Metal3MachineTemplate
+        matchResources:
+          controlPlane: true
       jsonPatches:
       - op: replace
         path: /spec/template/spec/image/checksum
