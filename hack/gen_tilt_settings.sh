@@ -45,8 +45,7 @@ CAPIRELEASEPATH="${CAPIRELEASEPATH:-https://api.github.com/repos/${CAPI_BASE_URL
 export CAPIRELEASE="${CAPIRELEASE:-$(get_latest_release "${CAPIRELEASEPATH}" "v1.3.")}"
 
 # ClusterClass enable flag
-CLUSTER_TOPOLOGY_ENABLE="${CLUSTER_TOPOLOGY:-}"
-if [ -n "${CLUSTER_TOPOLOGY_ENABLE}" ]; then
+if [ -n "${CLUSTER_TOPOLOGY:-}" ]; then
 cat <<EOF >tilt-settings.json
 {
     "capi_version": "${CAPIRELEASE}",

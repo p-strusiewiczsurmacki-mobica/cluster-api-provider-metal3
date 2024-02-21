@@ -56,8 +56,6 @@ METAL3CRDS_GENERATED_FILE=${OUTPUT_DIR}/metal3crds.yaml
 # Overwrite flag.
 OVERWRITE=0
 
-# ClusterClass enable flag
-CLUSTERCLASS_ENABLE="${CLUSTERCLASS:-}"
 
 SCRIPT=$(basename "$0")
 while test $# -gt 0; do
@@ -98,13 +96,14 @@ ENVSUBST="${SOURCE_DIR}/envsubst-go"
 curl --fail -Ss -L -o "${ENVSUBST}" https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-"$(uname -s)"-"$(uname -m)"
 chmod +x "$ENVSUBST"
 
-if [ -n "${CLUSTERCLASS_ENABLE}" ]; then
+if [ -n "${CLUSTER_TOPOLOGY:-}" ]; then
+  # Generate clusterclass resources.
   "$ENVSUBST" -i "${SOURCE_DIR}/templates/clusterclass.yaml" >"${CLUSTERCLASS_GENERATED_FILE}"
-  echo "Generated ${CLUSTER_GENERATED_FILE}"
+  echo "Generated ${CLUSTERCLASS_GENERATED_FILE}"
 
-  # Generate controlplane resources.
+  # Generate cluster resources.
   "$ENVSUBST" -i "${SOURCE_DIR}/templates/cluster.yaml" >"${CLUSTER_GENERATED_FILE}"
-  echo "Generated ${CONTROLPLANE_GENERATED_FILE}"
+  echo "Generated ${CLUSTER_GENERATED_FILE}"
 else
   # Generate cluster resources.
   "$KUSTOMIZE" build "${SOURCE_DIR}/cluster" | "$ENVSUBST" >"${CLUSTER_GENERATED_FILE}"

@@ -1,5 +1,5 @@
 /*
-Copyright 2021 The Kubernetes Authors.
+Copyright 2024 The Kubernetes Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ type Metal3ClusterTemplateSpec struct {
 }
 
 // +kubebuilder:object:root=true
-// +kubebuilder:resource:path=metal3clustertemplates,scope=Namespaced,categories=cluster-api
+// +kubebuilder:resource:path=metal3clustertemplates,scope=Namespaced,categories=cluster-api,shortName=m3ct
 // +kubebuilder:storageversion
 
 // Metal3ClusterTemplate is the Schema for the metal3clustertemplates API.

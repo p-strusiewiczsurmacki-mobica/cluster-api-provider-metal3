@@ -412,7 +412,7 @@ generate-examples: $(KUSTOMIZE) clean-examples ## Generate examples configuratio
 
 .PHONY: generate-examples-clusterclass
 generate-examples-clusterclass: $(KUSTOMIZE) clean-examples ## Generate examples configurations to run a cluster.
-	CLUSTERCLASS=true ./examples/generate.sh
+	CLUSTER_TOPOLOGY=true ./examples/generate.sh
 
 ## --------------------------------------
 ## Docker
