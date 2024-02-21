@@ -517,11 +517,9 @@ delete-examples:
 	kubectl delete -f ./examples/_out/metal3plane.yaml || true
 
 delete-examples-clusterclass:
-	kubectl delete -f ./examples/_out/cluster.yaml
-	kubectl delete -f ./examples/_out/clusterclass.yaml
-	kubectl delete -f ./examples/_out/metal3plane.yaml
-	
-	
+	kubectl delete -f ./examples/_out/cluster.yaml || true
+	kubectl delete -f ./examples/_out/clusterclass.yaml || true
+	kubectl delete -f ./examples/_out/metal3plane.yaml || true
 
 ## --------------------------------------
 ## Release
