@@ -51,7 +51,7 @@ spec:
         checksum: ${IMAGE_CHECKSUM}
         checksumType: ${IMAGE_CHECKSUM_TYPE}
         format: ${IMAGE_FORMAT}
-        url: http://example.com
+        url: ${IMAGE_URL}
       dataTemplate:
         name: example-md-metadata
 ---
@@ -348,12 +348,39 @@ spec:
         matchResources:
           infrastructureCluster: true
       jsonPatches:
-      - op: add
+      - op: replace
         path: /spec/template/spec/controlPlaneEndpoint
         valueFrom:
           variable: controlPlaneEndpoint
   - name: imageSub
     description: Overrides image data for worker nodes of example-worker class
+    definitions:
+    - selector:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+        kind: Metal3MachineTemplate
+        matchResources:
+          machineDeploymentClass:
+            names:
+            - example-worker
+      jsonPatches:
+      - op: replace
+        path: /spec/template/spec/image/checksum
+        valueFrom:
+          variable: image.checksum
+      - op: replace
+        path: /spec/template/spec/image/checksumType
+        valueFrom:
+          variable: image.checksumType
+      - op: replace
+        path: /spec/template/spec/image/format
+        valueFrom:
+          variable: image.format
+      - op: replace
+        path: /spec/template/spec/image/url
+        valueFrom:
+          variable: image.url
+  - name: clusternameSub
+    description: Overrides cluster name for worker nodes of example-worker class
     definitions:
     - selector:
         apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
