@@ -19,23 +19,13 @@ spec:
   template:
     spec:
       kubeadmConfigSpec:
-        clusterConfiguration:
-          apiServer:
-            extraArgs:
-              cloud-provider: baremetal
-          controllerManager:
-            extraArgs:
-              cloud-provider: baremetal
+        clusterConfiguration: {}
         initConfiguration:
           nodeRegistration:
-            kubeletExtraArgs:
-              cloud-provider: baremetal
             name: '{{ ds.meta_data.local_hostname }}'
         joinConfiguration:
           controlPlane: {}
           nodeRegistration:
-            kubeletExtraArgs:
-              cloud-provider: baremetal
             name: '{{ ds.meta_data.local_hostname }}'
 ---
 apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
@@ -152,8 +142,6 @@ spec:
       joinConfiguration:
         nodeRegistration:
           name: '{{ ds.meta_data.hostname }}'
-          kubeletExtraArgs:
-            cloud-provider: baremetal
 ---
 apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
 kind: Metal3MachineTemplate
