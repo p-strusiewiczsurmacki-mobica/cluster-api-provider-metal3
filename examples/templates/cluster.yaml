@@ -249,3 +249,7 @@ spec:
       value:
         host: ${CLUSTER_APIENDPOINT_HOST}
         port: ${CLUSTER_APIENDPOINT_PORT}
+    - name: workerDataTemplate
+      value: example-md-metadata
+    - name: controlPlaneDataTemplate
+      value: example-cp-metadata

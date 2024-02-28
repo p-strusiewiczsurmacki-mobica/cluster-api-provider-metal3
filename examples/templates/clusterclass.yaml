@@ -102,6 +102,14 @@ spec:
             type: string
           url:
             type: string
+  - name: workerDataTemplate
+    schema:
+      openAPIV3Schema:
+        type: string
+  - name: controlPlaneDataTemplate
+    schema:
+      openAPIV3Schema:
+        type: string
   patches:
   - name: controlPlaneEndpointSub
     description: Overrides controlPlaneEndpoint data of Metal3ClusterTemplate used by the cluster
@@ -143,8 +151,8 @@ spec:
         path: /spec/template/spec/image/url
         valueFrom:
           variable: image.url
-  - name: clusternameSub
-    description: Overrides cluster name for worker nodes of example-worker class
+  - name: workerDataTemplateSub
+    description: Overrides data-template for worker nodes
     definitions:
     - selector:
         apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
@@ -155,21 +163,9 @@ spec:
             - example-worker
       jsonPatches:
       - op: replace
-        path: /spec/template/spec/image/checksum
+        path: /spec/template/spec/dataTemplate/name
         valueFrom:
-          variable: image.checksum
-      - op: replace
-        path: /spec/template/spec/image/checksumType
-        valueFrom:
-          variable: image.checksumType
-      - op: replace
-        path: /spec/template/spec/image/format
-        valueFrom:
-          variable: image.format
-      - op: replace
-        path: /spec/template/spec/image/url
-        valueFrom:
-          variable: image.url
+          variable: workerDataTemplate
   - name: controlPlaneImageSub
     description: Overrides image data for worker nodes of control plane node
     definitions:
@@ -195,6 +191,19 @@ spec:
         path: /spec/template/spec/image/url
         valueFrom:
           variable: image.url
+  - name: controlPlaneDataTemplateSub
+    description: Overrides data-template for control plane nodes
+    definitions:
+    - selector:
+        apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+        kind: Metal3MachineTemplate
+        matchResources:
+          controlPlane: true
+      jsonPatches:
+      - op: replace
+        path: /spec/template/spec/dataTemplate/name
+        valueFrom:
+          variable: controlPlaneDataTemplate
   controlPlane:
     ref:
       apiVersion: controlplane.cluster.x-k8s.io/v1beta1
