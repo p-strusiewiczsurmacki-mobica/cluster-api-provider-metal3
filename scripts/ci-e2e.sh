@@ -10,6 +10,10 @@ FORCE_REPO_UPDATE="${FORCE_REPO_UPDATE:-false}"
 
 export CAPM3RELEASEBRANCH="${CAPM3RELEASEBRANCH:-main}"
 
+if [ -n "${CLUSTER_TOPOLOGY:-}" ]; then
+    export CLUSTER_TOPOLOGY=true
+fi
+
 # Starting from CAPI v1.5.0 version cluster-api config folder location has changed
 # to XDG_CONFIG_HOME folder. Following code defines the cluster-api config folder
 # location according to CAPM3(since CAPM3 minor versions are aligned to CAPI
