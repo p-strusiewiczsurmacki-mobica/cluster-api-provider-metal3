@@ -8,5 +8,5 @@ spec:
     spec:
       containers:
       # Change the value of image field below to your controller image URL
-      - image: quay.io/metal3-io/ip-address-manager:v1.6.0
+      - image: 192.168.111.1:5000/localimages/ip-address-manager:main
         name: manager
